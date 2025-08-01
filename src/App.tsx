@@ -1,4 +1,4 @@
-import { PrimeReactTable } from './primeReactTable'
+import { PrimeReactTable } from './components/primeReactTable'
 
 function App() {
   return (

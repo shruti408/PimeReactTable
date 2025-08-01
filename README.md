@@ -19,14 +19,12 @@ Dependencies installed:
 - primereact, primeicons, axios.
 
 Tech Stack:
-- React + TypeScript
-- PrimeReact UI components
-- PrimeIcons
-- Axios for API calls
-- LocalStorage for persistence
+- React
+- TypeScript
+- PrimeReact
+- Axios
+- Netlify (for deployment)
 
 Installation: 
-- git clone "https://github.com/shruti408/PimeReactTable.git" 
-- cd primereacttable
-- npm install
-- npm start 
+ - npm install
+ 

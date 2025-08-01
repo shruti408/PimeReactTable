@@ -3,8 +3,9 @@ import 'primeicons/primeicons.css';
 import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { DataTable } from 'primereact/datatable';
+import type { DataTablePageEvent } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { InputNumber, type InputNumberValueChangeEvent} from 'primereact/inputnumber';
+import { InputNumber, type InputNumberValueChangeEvent } from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
 
@@ -82,14 +83,15 @@ export const PrimeReactTable: React.FC = () => {
 
 
     // pagination 
-    function onPageChange(event: any) {
+    function onPageChange(event: DataTablePageEvent) {
         setFirst(event.first);
-        setPage(event.page)
+        setPage(event.page ?? 0);
     };
 
     // checkbox selection
-    function onSelectionChange(event: DataTableSelectionChangeEvent) {
-        setSelectedRows(event.value);
+    function onSelectionChange(event: { value: Artwork[] }) {
+        const selected: Artwork[] = event.value as Artwork[];
+        setSelectedRows(selected);
         // saving selected row ids in local storage 
         const rowIds = event.value.map((row: Artwork) => {
             return row.id;
@@ -115,8 +117,10 @@ export const PrimeReactTable: React.FC = () => {
     };
     // form input value change
     function onChange(e: InputNumberValueChangeEvent) {
-        setInitialRemainingRows(e.value);
-        setInitialPage(page + 1);
+        if (e.value !== null && e.value !== undefined) {
+            setInitialRemainingRows(e.value);
+            setInitialPage(page + 1);
+        }
     }
 
     return (
