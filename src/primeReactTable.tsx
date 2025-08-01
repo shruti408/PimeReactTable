@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { InputNumber } from 'primereact/inputnumber';
+import { InputNumber, type InputNumberValueChangeEvent} from 'primereact/inputnumber';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
 
@@ -34,7 +34,7 @@ export const PrimeReactTable: React.FC = () => {
         fetchData();
     }, [page]);
 
-        // data fetching 
+    // data fetching 
     async function fetchData() {
         setLoading(true);
         try {
@@ -46,7 +46,7 @@ export const PrimeReactTable: React.FC = () => {
 
             // getting saved data from local storage 
             const savedIds: number[] = JSON.parse(localStorage.getItem(`page-${page + 1}`) || '[]');
-            let savedRows = data.filter(row => savedIds.includes(row.id));
+            let savedRows = data.filter((row: Artwork) => savedIds.includes(row.id));
             savedRows = [...selectedRows, ...savedRows];
 
             // form submiision row selection
@@ -54,7 +54,7 @@ export const PrimeReactTable: React.FC = () => {
                 const currentPage = page + 1;
                 const previousSelectedRows = (currentPage - initialPage) * 12;
                 if (initialRemainingRows > previousSelectedRows) {
-                   const newRemainingRows = initialRemainingRows - previousSelectedRows;
+                    const newRemainingRows = initialRemainingRows - previousSelectedRows;
                     const rowsToSelect = [];
                     for (let i = 0; i < Math.min(newRemainingRows, data.length); i++) {
                         rowsToSelect.push(data[i]);
@@ -70,7 +70,12 @@ export const PrimeReactTable: React.FC = () => {
             setSelectedRows(savedRows);
 
         } catch (error) {
-            setError("There is some error in fetching data:", error);
+            if (error instanceof Error) {
+                setError(`There was an error fetching data: ${error.message}`);
+            } else {
+                setError('There was an unknown error fetching data.');
+            }
+
         }
         setLoading(false);
     };
@@ -78,15 +83,17 @@ export const PrimeReactTable: React.FC = () => {
 
     // pagination 
     function onPageChange(event: any) {
-         setFirst(event.first);
+        setFirst(event.first);
         setPage(event.page)
     };
 
-      // checkbox selection
-    function onSelectionChange(event: any) {
+    // checkbox selection
+    function onSelectionChange(event: DataTableSelectionChangeEvent) {
         setSelectedRows(event.value);
         // saving selected row ids in local storage 
-        const rowIds = event.value.map((row) => row.id);
+        const rowIds = event.value.map((row: Artwork) => {
+            return row.id;
+        });
         localStorage.setItem(`page-${page + 1}`, JSON.stringify(rowIds));
 
     }
@@ -104,10 +111,10 @@ export const PrimeReactTable: React.FC = () => {
         // saving selected row ids in local storage 
         const rowIds = rowsToSelect.map((row) => row.id);
         localStorage.setItem(`page-${page + 1}`, JSON.stringify(rowIds));
-         
+
     };
     // form input value change
-    function onChange(e: any) {
+    function onChange(e: InputNumberValueChangeEvent) {
         setInitialRemainingRows(e.value);
         setInitialPage(page + 1);
     }
@@ -166,7 +173,7 @@ export const PrimeReactTable: React.FC = () => {
                 <Column field="date_end" header="Date End" />
             </DataTable>
 
-            <h2 style={{ color: 'red' }}>{error}</h2> 
+            <h2 style={{ color: 'red' }}>{error}</h2>
         </div>
     );
 };
